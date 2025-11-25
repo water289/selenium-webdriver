@@ -7,17 +7,24 @@ pipeline {
     stage('Setup Python') {
       steps {
         sh '''
+          set -e
           python3 -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install selenium webdriver-manager
+          fi
         '''
       }
     }
     stage('Run Test') {
       steps {
         sh '''
+          set -e
           . .venv/bin/activate
+          # adjust filename if your test file is named differently (e.g. firsttest.py)
           python3 TestScriptMay092025.py
         '''
       }
@@ -25,7 +32,7 @@ pipeline {
   }
   post {
     always {
-      sh 'deactivate || true'
+      sh 'rm -rf .venv || true'
     }
   }
 }
