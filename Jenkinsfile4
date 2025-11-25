@@ -1,38 +1,25 @@
+selenium-webdriver /Jenkinsfile4: 
+
 pipeline {
   agent any
   stages {
-    stage('Checkout') {
-      steps { checkout scm }
-    }
-    stage('Setup Python') {
+    stage('Test') {
       steps {
-        sh '''
-          set -e
-          python3 -m venv .venv
-          . .venv/bin/activate
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
+       sh '''
+            # 1. Create a virtual environment named 'my_env' in the workspace
+            python3 -m venv my_env
+
+            # 2. Activate the environment
+            . my_env/bin/activate
+
+            # 3. Install the required libraries INSIDE this environment
+            # (This works because we are now inside the venv, not the system)
             pip install selenium webdriver-manager
-          fi
+
+            # 4. Run your script
+            python TestScriptMay092025.py
         '''
       }
     }
-    stage('Run Test') {
-      steps {
-        sh '''
-          set -e
-          . .venv/bin/activate
-          # adjust filename if your test file is named differently (e.g. firsttest.py)
-          python3 TestScriptMay092025.py
-        '''
-      }
-    }
-  }
-  post {
-    always {
-      sh 'rm -rf .venv || true'
-    }
-  }
+}
 }
