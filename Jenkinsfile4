@@ -1,5 +1,3 @@
-selenium-webdriver /Jenkinsfile4: 
-
 pipeline {
   agent any
   stages {
